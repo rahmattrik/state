@@ -11,61 +11,50 @@ import TextArea from "../components/TextArea";
 
 const Details = () => {
   const { direction, next, previous } = useSwitch(scientists.length);
-
-  const [state, setState] = useState({
+  const navigate = useNavigate();
+  
+  const [state, setState] = useImmer({
     scientist: scientists[direction],
-    editedData: scientists[direction],
+    updateScientist: scientists[direction],
     show: false,
   });
-
-  const {scientist, editedData, show} = state;
-  const navigate = useNavigate();
+  const {scientist, updateScientist, show} = state;
 
   function handleChange(e) {
-    const {name, value} = e.target;  
+    const {name, value} = e.target;
 
-    if (name.startsWith("profile.")) {  //if name started with profile
-      const key = name.split(".")[1];   //
-      setState((currState) => ({   //set state
-        ...currState,              //copy all old-properties
-        editedData: {              //update 'editedData'
-          ...currState.editedData, //copy property from 'editedData'
-          profile: {                          //update profile
-            ...currState.editedData.profile,  //copy property from profile
-            [key]: value,                     //copy property value based on key
-          },
-        },
-      }));
-    } else {
-      setState((currState) => ({   //set state
-        ...currState,              //copy all old-properties
-        editedData: {              //update 'editedData'
-          ...currState.editedData,    //copy property from 'editedData'
-          [name]: value,              //change value properties based on the name
-        }
-      }));
-    }
+    setState((draft) => {
+      const [property, key] = name.split(".");
+
+      if (property === "profile" && key) {
+        draft.updateScientist.profile[key] = value;
+      } else {
+        draft.updateScientist[name] = value;
+      }
+    });
   }
 
   const toggleEdit= () => {
-    setState((currState) => ({ //set state
-      ...currState,            //copy old-properties
-      scientist: show? editedData : currState.scientist,    //
-      show: !show,
-    }));
+    setState((draft) => {
+      //reverse show value
+      draft.show = !show; 
+      if (!draft.show) {
+        draft.scientist = {...draft.updateScientist};
+      }
+    });
   };
+
+  useEffect(() => {
+    setState((draft) => {
+      draft.scientist = scientists[direction];
+      draft.updateScientist = scientists[direction];
+      draft.show = false;
+    });
+  }, [direction, setState]);
 
   const closeDetails = () => {
     navigate(`/`)
   }
-
-  useEffect(() => {
-    setState((currState) => ({
-      ...currState,
-      scientist: scientists[direction],
-      editedData: scientists[direction],
-    }));
-  }, [direction]);
 
   return (
     <div className="mx-10 flex h-screen flex-row items-center justify-center">
@@ -77,9 +66,9 @@ const Details = () => {
 
       {/* Content */}
       <div className="mx-10 flex flex-col items-center justify-center">
-        {!state.show && (
+        {!show && (
           <h1 className="my-10 font-mono text-2xl font-bold text-black">
-          {scientist.profile.name}
+          {scientist?.profile?.name || "Not Available"}
         </h1>
         )}
         <div>
@@ -93,7 +82,7 @@ const Details = () => {
             />
           </Border>
         </div>
-        {!state.show && (
+        {!show && (
           <div className="mb-5 mt-10 flex flex-col items-center justify-center">
             <p className="max-w-lg items-center justify-center font-mono text-black">
               {`${scientist.profession} known for 
@@ -104,23 +93,23 @@ const Details = () => {
           </div>
         )}
 
-        {state.show && (
+        {show && (
           <div className="mx-auto mb-5 mt-10 flex flex-col items-center justify-center">
               <TextArea 
                 name={"profile.name"} 
-                value={editedData.profile.name}
+                value={updateScientist.profile.name}
                 placeholder={"Name"}
                 handleChange={handleChange}
               />
               <TextArea 
                 name={"profession"} 
-                value={editedData.profession}
+                value={updateScientist.profession}
                 placeholder={"Profession"}
                 handleChange={handleChange}
               />
               <TextArea 
                 name={"accomplisment"} 
-                value={editedData.accomplisment}
+                value={updateScientist.accomplisment}
                 placeholder={"Accomplisment"}
                 handleChange={handleChange}
               />
