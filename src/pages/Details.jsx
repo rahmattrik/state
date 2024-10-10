@@ -12,45 +12,28 @@ import TextArea from "../components/TextArea";
 const Details = () => {
   const { direction, next, previous } = useSwitch(scientists.length);
   const navigate = useNavigate();
-  
-  const [state, setState] = useImmer({
-    scientist: scientists[direction],
-    updateScientist: scientists[direction],
-    show: false,
-  });
-  const {scientist, updateScientist, show} = state;
+
+  const [scientist, setScientitst] = useState(scientists[direction]);
+  const [show, setShow] = useState(false);
+  const updateScientist = {...scientist};
 
   function handleChange(e) {
     const {name, value} = e.target;
-
-    setState((draft) => {
-      const [property, key] = name.split(".");
-
-      if (property === "profile" && key) {
-        draft.updateScientist.profile[key] = value;
-      } else {
-        draft.updateScientist[name] = value;
-      }
-    });
+    const [property, key] = name.split(".");
+    setScientitst((curr) => ({
+      ...curr,
+      [property]: key? {...curr[property], [key]: value} : value
+    }));
   }
 
   const toggleEdit= () => {
-    setState((draft) => {
-      //reverse show value
-      draft.show = !show; 
-      if (!draft.show) {
-        draft.scientist = {...draft.updateScientist};
-      }
-    });
+    setShow((curr) => !curr);
   };
 
   useEffect(() => {
-    setState((draft) => {
-      draft.scientist = scientists[direction];
-      draft.updateScientist = scientists[direction];
-      draft.show = false;
-    });
-  }, [direction, setState]);
+    setScientitst(scientists[direction]);
+    setShow(false);
+  }, [direction]);
 
   const closeDetails = () => {
     navigate(`/`)
