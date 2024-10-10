@@ -1,64 +1,43 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Border from "../components/Border";
+import Button from "../components/Button";
+import TextArea from "../components/TextArea";
+import useSwitch from "../hooks/useSwitch";
+import useVisibility from "../hooks/useVisibility";
 import { scientists } from "../utils/data";
 import { getImageURL } from "../utils/utils";
-import { useNavigate } from "react-router-dom";
-import { useImmer } from "use-immer";
-import Button from "../components/Button";
-import Border from "../components/Border";
-import useSwitch from "../hooks/useSwitch";
-import TextArea from "../components/TextArea";
 
 const Details = () => {
   const { direction, next, previous } = useSwitch(scientists.length);
+  const { state, toggle } = useVisibility();
+  const { showEdit } = state;
   const navigate = useNavigate();
-  
-  const [state, setState] = useImmer({
-    scientist: scientists[direction],
-    updateScientist: scientists[direction],
-    show: false,
-  });
-  const {scientist, updateScientist, show} = state;
+
+  const [scientist, setScientitst] = useState(scientists[direction]);
+  const updateScientist = { ...scientist };
 
   function handleChange(e) {
-    const {name, value} = e.target;
+    const { name, value } = e.target;
+    const [property, key] = name.split(".");
 
-    setState((draft) => {
-      const [property, key] = name.split(".");
-
-      if (property === "profile" && key) {
-        draft.updateScientist.profile[key] = value;
-      } else {
-        draft.updateScientist[name] = value;
-      }
-    });
+    setScientitst((curr) => ({
+      ...curr, //copy all old-properties
+      [property]: key ? { ...curr[property], [key]: value } : value,
+    }));
   }
-
-  const toggleEdit= () => {
-    setState((draft) => {
-      //reverse show value
-      draft.show = !show; 
-      if (!draft.show) {
-        draft.scientist = {...draft.updateScientist};
-      }
-    });
-  };
 
   useEffect(() => {
-    setState((draft) => {
-      draft.scientist = scientists[direction];
-      draft.updateScientist = scientists[direction];
-      draft.show = false;
-    });
-  }, [direction, setState]);
+    setScientitst(scientists[direction]);
+  }, [direction]); //Dependency array: only run if direction change
 
   const closeDetails = () => {
-    navigate(`/`)
-  }
+    navigate(`/`);
+  };
 
   return (
     <div className="mx-10 flex h-screen flex-row items-center justify-center">
-      {!show && (
+      {!showEdit && (
         <div className="flex-shrink-0">
           <Button initial={"❮"} onClick={previous} />
         </div>
@@ -66,10 +45,10 @@ const Details = () => {
 
       {/* Content */}
       <div className="mx-10 flex flex-col items-center justify-center">
-        {!show && (
+        {!showEdit && (
           <h1 className="my-10 font-mono text-2xl font-bold text-black">
-          {scientist?.profile?.name || "Not Available"}
-        </h1>
+            {scientist?.profile?.name || "Not Available"}
+          </h1>
         )}
         <div>
           <Border>
@@ -82,7 +61,7 @@ const Details = () => {
             />
           </Border>
         </div>
-        {!show && (
+        {!showEdit && (
           <div className="mb-5 mt-10 flex flex-col items-center justify-center">
             <p className="max-w-lg items-center justify-center font-mono text-black">
               {`${scientist.profession} known for 
@@ -93,36 +72,40 @@ const Details = () => {
           </div>
         )}
 
-        {show && (
+        {showEdit && (
           <div className="mx-auto mb-5 mt-10 flex flex-col items-center justify-center">
-              <TextArea 
-                name={"profile.name"} 
-                value={updateScientist.profile.name}
-                placeholder={"Name"}
-                handleChange={handleChange}
-              />
-              <TextArea 
-                name={"profession"} 
-                value={updateScientist.profession}
-                placeholder={"Profession"}
-                handleChange={handleChange}
-              />
-              <TextArea 
-                name={"accomplisment"} 
-                value={updateScientist.accomplisment}
-                placeholder={"Accomplisment"}
-                handleChange={handleChange}
-              />
+            <TextArea
+              name={"profile.name"}
+              value={updateScientist.profile.name}
+              placeholder={"Name"}
+              handleChange={handleChange}
+            />
+            <TextArea
+              name={"profession"}
+              value={updateScientist.profession}
+              placeholder={"Profession"}
+              handleChange={handleChange}
+            />
+            <TextArea
+              name={"accomplisment"}
+              value={updateScientist.accomplisment}
+              placeholder={"Accomplisment"}
+              handleChange={handleChange}
+            />
           </div>
         )}
 
         <div className="my-5 flex flex-row items-center justify-center">
-            <Button initial={"Back"} onClick={closeDetails} />
-            <Button initial={show? "Save" : "Edit"} icon={false} onClick={toggleEdit}/>
+          <Button initial={"Back"} onClick={closeDetails} />
+          <Button
+            initial={showEdit ? "Save" : "Edit"}
+            icon={false}
+            onClick={() => toggle("showEdit", !showEdit)}
+          />
         </div>
       </div>
 
-      {!show && (
+      {!showEdit && (
         <div className="flex-shrink-0">
           <Button initial={"❯"} onClick={next} />
         </div>
