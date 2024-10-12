@@ -10,7 +10,7 @@ import { getImageURL } from "../utils/utils";
 
 const Details = () => {
   const { direction, next, previous } = useSwitch(scientists.length);
-  const { state, toggle } = useVisibility();
+  const {state, toggle, reset} = useVisibility();
   const { showEdit } = state;
   const navigate = useNavigate();
 
@@ -32,6 +32,7 @@ const Details = () => {
   }, [direction]); //Dependency array: only run if direction change
 
   const closeDetails = () => {
+    reset();
     navigate(`/`);
   };
 
@@ -100,7 +101,7 @@ const Details = () => {
           <Button
             initial={showEdit ? "Save" : "Edit"}
             icon={false}
-            onClick={() => toggle("showEdit", !showEdit)}
+            onClick={() => toggle("showEdit")}
           />
         </div>
       </div>
