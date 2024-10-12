@@ -7,7 +7,6 @@ import Form from "../components/Form";
 import useVisibility from "../hooks/useVisibility";
 
 const Home = () => {
-  // const { state, toggle } = useVisibility();
   const {state, toggle, reset} = useVisibility();
   const { showForm, showMore } = state;
   const navigate = useNavigate();
@@ -34,12 +33,10 @@ const Home = () => {
         <div className="mt-5 flex flex-row items-center justify-center">
           <Button
             initial={"Newsletter"}
-            // onClick={() => toggle("showForm", !showForm)}
             onClick={() => toggle("showForm")} 
           />
           <Button
             initial={showMore ? "Show Less" : "Show More"}
-            // onClick={() => toggle("showMore", !showMore)}
             onClick={() => toggle("showMore")}
           />
           <Button
@@ -55,7 +52,6 @@ const Home = () => {
         <div className="mx-auto mt-5 flex flex-row items-center justify-center text-center">
           <Button 
             initial={"x"} 
-            // onClick={() => toggle("showForm", false)} 
             onClick={() => toggle("showForm")}
           />
           <Form />
