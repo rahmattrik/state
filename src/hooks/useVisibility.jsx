@@ -1,25 +1,18 @@
-import { useReducer } from "react";
+import { useCallback, useState } from "react";
 
-function visibilityReducer(state, action) {
-  return {
-    ...state,       //copy all old-properties
-    [action.payload.type]: action.payload.value,
-  };
+export default function useVisibility() {
+    const [visibility, setVisibility] = useState({});
+    
+    const toggle = useCallback((key) => {
+        setVisibility((curr) => ({
+            ...curr,
+            [key]: !curr[key]
+        }));
+    }, []);
+
+    const reset = useCallback(() => {
+        setVisibility({});
+    }, [])
+
+    return {state: visibility, toggle, reset};
 }
-
-function useVisibility() {
-  const initialState = {
-    showForm: false,
-    showMore: false,
-    showEdit: false,
-  };
-
-  const [state, dispatch] = useReducer(visibilityReducer, initialState);
-  function toggle(type, value) {
-    dispatch({ payload: { type, value } });
-  }
-
-  return { state, toggle };
-}
-
-export default useVisibility;

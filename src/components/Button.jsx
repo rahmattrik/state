@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function Button({
   type,
   onClick,
@@ -6,6 +8,7 @@ export default function Button({
   icon = false,
   pathData = "",
 }) {
+  
   return (
     <button
       className="m-2 flex items-center rounded-full border-2 border-black bg-white px-4 py-2 text-center font-mono text-black transition-transform duration-150 hover:scale-95 hover:bg-black hover:text-white"
