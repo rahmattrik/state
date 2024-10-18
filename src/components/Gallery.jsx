@@ -8,9 +8,13 @@ export default function Gallery() {
       <div>
         <Border>
           <div className="flex flex-row flex-nowrap items-center">
-            {scientists.map((scientist, index) => (
+            {scientists.map((scientist) => (
               //Throw data to Profile.jsx
-              <Profile key={index} profile={scientist.profile} size={90} />
+              <Profile 
+                key={scientist.id} 
+                profile={scientist.profile} 
+                size={90} 
+              />
             ))}
           </div>
         </Border>

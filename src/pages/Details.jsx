@@ -37,7 +37,7 @@ const Details = () => {
   };
 
   return (
-    <div className="mx-10 flex h-screen flex-row items-center justify-center">
+    <div className="mx-auto flex h-screen flex-row items-center justify-center">
       {!showEdit && (
         <div className="flex-shrink-0">
           <Button initial={"❮"} onClick={previous} />
@@ -45,25 +45,28 @@ const Details = () => {
       )}
 
       {/* Content */}
-      <div className="mx-10 flex flex-col items-center justify-center">
-        {!showEdit && (
-          <h1 className="my-10 font-mono text-2xl font-bold text-black">
-            {scientist?.profile?.name || "Not Available"}
-          </h1>
-        )}
-        <div>
+      <div className="mx-5 flex flex-col items-center justify-center">
+        
+        <div className="mt-10">
           <Border>
             <img
               className="flex flex-nowrap rounded-full"
               src={getImageURL(scientist.profile)}
-              height={225}
-              width={225}
+              height={195}
+              width={195}
               alt={`Profile of ${scientist.profile.name}`}
             />
           </Border>
         </div>
+
         {!showEdit && (
-          <div className="mb-5 mt-10 flex flex-col items-center justify-center">
+          <h1 className="my-5 font-mono text-xl font-bold text-black">
+            {scientist?.profile?.name || "Not Available"}
+          </h1>
+        )}
+
+        {!showEdit && (
+          <div className="mb-5 mt-2.5 flex flex-col items-center justify-center">
             <p className="max-w-lg items-center justify-center font-mono text-black">
               {`${scientist.profession} known for 
                 ${scientist.accomplisment} Born in 
@@ -96,7 +99,7 @@ const Details = () => {
           </div>
         )}
 
-        <div className="my-5 flex flex-row items-center justify-center">
+        <div className="my-2.5 flex flex-row items-center justify-center">
           <Button initial={"Back"} onClick={closeDetails} />
           <Button
             initial={showEdit ? "Save" : "Edit"}
